@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from utils.set_new_values import get_appointment_first, get_hour_first, get_appointment_second, get_hour_second
-from utils.general_utils import clicks, enter, canSetValues
+from utils.general_utils import clicks, enter, canSetValues, is_after_5_days
 from utils.send_new_message import send_message
 import asyncio
 import time
@@ -60,12 +60,14 @@ async def main():
             months = user_months.split(',')
             matching_dates = [date for date in dates if any(
                 date.startswith(f"{user_year}-{month}") for month in months)]
-            if matching_dates:
-                await send_message(f'Fecha valida: {user_email}')
+            valid_dates = [
+                date for date in matching_dates if is_after_5_days(date)]
+            if valid_dates:
                 canSetValues(driver, new_date)
-                thew_new_date = matching_dates[0]
+                thew_new_date = valid_dates[0]
                 new_date.send_keys(thew_new_date)
                 enter(driver, new_date)
+                await send_message(f'Fecha valida: {user_email} - {thew_new_date}')
             else:
                 print("")
                 print('Fecha indeseada')
@@ -115,7 +117,7 @@ async def main():
             # Element to confirm
             confirm_button = driver.find_element(
                 By.CSS_SELECTOR, "a.button.alert")
-            clicks(confirm_button)
+            clicks(driver, confirm_button)
             WebDriverWait(driver, 10)
 
             # Send message to telegram with email
