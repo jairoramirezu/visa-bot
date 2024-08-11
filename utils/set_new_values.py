@@ -1,5 +1,6 @@
 import json
 import asyncio
+import gzip
 
 
 async def get_appointment_first(driver):
@@ -8,8 +9,12 @@ async def get_appointment_first(driver):
         for request in driver.requests:
             if request.response:
                 if request.response.status_code == 200 and 'appointments' in request.url and '25.json' in request.url:
-                    response_body = request.response.body.decode('utf-8')
-                    data = json.loads(response_body)
+                    response_body = request.response.body
+                    try:
+                        decompressed_body = gzip.decompress(response_body)
+                        data = json.loads(decompressed_body.decode('utf-8'))
+                    except gzip.BadGzipFile:
+                        data = json.loads(response_body.decode('utf-8'))
                     dates = [item['date'] for item in data]
                     if dates:
                         print(dates)
@@ -25,8 +30,12 @@ async def get_hour_first(driver):
         for request in driver.requests:
             if request.response:
                 if request.response.status_code == 200 and 'date' in request.url and '25.json' in request.url:
-                    response_body = request.response.body.decode('utf-8')
-                    data = json.loads(response_body)
+                    response_body = request.response.body
+                    try:
+                        decompressed_body = gzip.decompress(response_body)
+                        data = json.loads(decompressed_body.decode('utf-8'))
+                    except gzip.BadGzipFile:
+                        data = json.loads(response_body.decode('utf-8'))
                     if 'available_times' in data:
                         times = [time for time in data['available_times']]
                         print(times)
@@ -42,8 +51,12 @@ async def get_appointment_second(driver, new_date, new_time):
         for request in driver.requests:
             if request.response:
                 if request.response.status_code == 200 and 'appointments' in request.url and '26.json' in request.url and new_date in request.url and new_time in request.url:
-                    response_body = request.response.body.decode('utf-8')
-                    data = json.loads(response_body)
+                    response_body = request.response.body
+                    try:
+                        decompressed_body = gzip.decompress(response_body)
+                        data = json.loads(decompressed_body.decode('utf-8'))
+                    except gzip.BadGzipFile:
+                        data = json.loads(response_body.decode('utf-8'))
                     dates = [item['date'] for item in data]
                     if dates:
                         print(dates)
@@ -59,8 +72,12 @@ async def get_hour_second(driver, new_date, new_time):
         for request in driver.requests:
             if request.response:
                 if request.response.status_code == 200 and 'date' in request.url and 'times' in request.url and '26.json' in request.url and new_date in request.url and new_time in request.url:
-                    response_body = request.response.body.decode('utf-8')
-                    data = json.loads(response_body)
+                    response_body = request.response.body
+                    try:
+                        decompressed_body = gzip.decompress(response_body)
+                        data = json.loads(decompressed_body.decode('utf-8'))
+                    except gzip.BadGzipFile:
+                        data = json.loads(response_body.decode('utf-8'))
                     if 'available_times' in data:
                         times = [time for time in data['available_times']]
                         print(times)

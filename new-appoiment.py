@@ -116,7 +116,7 @@ async def main():
 
             # Element to confirm
             confirm_button = driver.find_element(
-                By.CSS_SELECTOR, "a.button.alert")
+                By.CSS_SELECTOR, ".button.alert")
             clicks(driver, confirm_button)
             WebDriverWait(driver, 10)
 
