@@ -123,7 +123,7 @@ async def main():
             # Send message to telegram with email
             await send_message(f'Cita registrada: {user_email}')
 
-            # Final al the operation
+            # Final all the operation
             driver.quit()
             break
 
